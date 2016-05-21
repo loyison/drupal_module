@@ -24,7 +24,7 @@
   /**
    * Implements hook_theme().
    */
-  function index(){
+  function index() {
 
     return $this->render('display.twig');
   }
