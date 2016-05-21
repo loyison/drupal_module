@@ -93,8 +93,9 @@ class XmlFileLoader extends FileLoader
             return;
         }
 
+        $defaultDirectory = dirname($file);
         foreach ($imports as $import) {
-            $this->setCurrentDir(dirname($file));
+            $this->setCurrentDir($defaultDirectory);
             $this->import($import->getAttribute('resource'), null, (bool) XmlUtils::phpize($import->getAttribute('ignore-errors')), $file);
         }
     }
@@ -230,6 +231,10 @@ class XmlFileLoader extends FileLoader
                 $parameters[$name] = XmlUtils::phpize($node->nodeValue);
             }
 
+            if ('' === $tag->getAttribute('name')) {
+                throw new InvalidArgumentException(sprintf('The tag name for service "%s" in %s must be a non-empty string.', (string) $service->getAttribute('id'), $file));
+            }
+
             $definition->addTag($tag->getAttribute('name'), $parameters);
         }
 
@@ -287,6 +292,10 @@ class XmlFileLoader extends FileLoader
                 if ($services = $this->getChildren($node, 'service')) {
                     $definitions[$id] = array($services[0], $file, false);
                     $services[0]->setAttribute('id', $id);
+
+                    // anonymous services are always private
+                    // we could not use the constant false here, because of XML parsing
+                    $services[0]->setAttribute('public', 'false');
                 }
             }
         }
@@ -297,11 +306,7 @@ class XmlFileLoader extends FileLoader
                 // give it a unique name
                 $id = sprintf('%s_%d', hash('sha256', $file), ++$count);
                 $node->setAttribute('id', $id);
-
-                if ($services = $this->getChildren($node, 'service')) {
-                    $definitions[$id] = array($node, $file, true);
-                    $services[0]->setAttribute('id', $id);
-                }
+                $definitions[$id] = array($node, $file, true);
             }
         }
 
@@ -310,9 +315,6 @@ class XmlFileLoader extends FileLoader
         foreach ($definitions as $id => $def) {
             list($domElement, $file, $wild) = $def;
 
-            // anonymous services are always private
-            // we could not use the constant false here, because of XML parsing
-            $domElement->setAttribute('public', 'false');
 
             if (null !== $definition = $this->parseDefinition($domElement, $file)) {
                 $this->container->setDefinition($id, $definition);

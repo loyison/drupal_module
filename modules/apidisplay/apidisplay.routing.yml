@@ -1,0 +1,6 @@
+apidisplay:
+    path: /displayapi
+    defaults:
+        _controller: Drupal\displayapi\Controller\ApidisplayController::index
+    requirements:
+        _permission: 'access content'

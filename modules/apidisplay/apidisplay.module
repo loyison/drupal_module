@@ -1,0 +1,30 @@
+<?php
+
+  use Drupal\Core\Routing\RouteMatchInterface;
+
+  /**
+   * Implements hook_help().
+   *
+   * The module file also helps in keeping themeing information
+   * RouteMatchingInterface replaces hook_help() from previous drupal versions
+   */
+  function apidisplay_help($route_name, RouteMatchInterface $route_match) {
+    switch ($route_name) {
+      case 'help.page.apidisplay':
+        return t('
+        <h2></h2>
+        <h3>Instructions</h3>
+        <p> This module allows the user to enter api from github and retrieve the info callback from the api</p>
+        <h4>Future enhancements</h4>
+        <p>allow to pull api data from other apis</p>
+      ');
+    }
+  }
+
+  /**
+   * Implements hook_theme().
+   */
+  function index(){
+
+    return $this->render('display.twig');
+  }

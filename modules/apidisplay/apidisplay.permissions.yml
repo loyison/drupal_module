@@ -1,0 +1,3 @@
+#Permissions defined
+generate Api:
+  title: 'Generate Api'

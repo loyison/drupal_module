@@ -1,0 +1,17 @@
+<?php
+
+  /**
+   * @file
+   * Installation functions for Api Display module.
+   */
+
+  use Drupal\user\RoleInterface;
+
+  /**
+   * Implements hook_install().
+   */
+  function apidisplay_instal() {
+    user_role_change_permissions(RoleInterface::ANONYMOUS_ID, array(
+      'Generate Api' => TRUE,
+    ));
+  }
